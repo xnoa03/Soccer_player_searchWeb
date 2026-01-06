@@ -101,9 +101,9 @@ params_FW_IDX = [
     44, 45,                          # G-xG, np:G-xG
     35, 36, 37, 38, 39,              # Sh, SoT, SoT%, Sh/90, SoT/90
     40, 41, 42,                      # G/Sh, G/SoT, Dist
-    123, 128,                        # Touches, Att Pen
+    141, 146,                        # Touches, Att Pen
     23, 24, 25,                      # PrgC, PrgP, PrgR
-    66, 90, 91, 98, 99               # KP, SCA, SCA90, GCA, GCA90
+    66, 110, 111, 98, 99              # KP, SCA, SCA90, GCA, GCA90
     ]
 params_MF_IDX = [
     11, 12,                          # Gls, Ast
@@ -111,32 +111,31 @@ params_MF_IDX = [
     54, 55, 56,                      # Cmp, Att, Cmp%
     57, 58, 24,                      # TotDist, PrgDist, PrgP
     68, 67,                          # PPA, 01-03
-    131, 23, 135, 136,               # Carries, PrgC, 1/3, CPA
-    133, 134, 138,                   # Succ, Succ%, Tkld%
-    90, 91, 98, 99,                  # SCA, SCA90, GCA, GCA90
-    103, 104, 110, 111,              # Tkl, TklW, Int, Tkl+Int
-    105, 106                         # Def 3rd, Mid 3rd
+    149, 23, 150, 151,               # Carries, PrgC, 1/3, CPA
+    152, 153, 155,                   # Succ, Succ%, Tkld%
+    110, 111, 98, 99,                # SCA, SCA90, GCA, GCA90
+    119, 120, 130, 131,              # Tkl, TklW, Int, Tkl+Int
+    121, 122                         # Def 3rd, Mid 3rd
     ]
 params_DF_IDX = [
     11, 12,                          # Gls, Ast
-    103, 104, 108,                   # Tkl, TklW, Tkl%
-    110, 111,                        # Int, Tkl+Int
-    109, 112, 113,                   # Blocks, Clr, Err
-    105, 106, 107,                   # Def 3rd, Mid 3rd, Att 3rd
-    171, 172, 173,                   # Won, Lost, Won%
+    119, 120, 125,                   # Tkl, TklW, Tkl%
+    130, 131,                        # Int, Tkl+Int
+    127, 132, 133,                   # Blocks, Clr, Err
+    121, 122, 123,                   # Def 3rd, Mid 3rd, Att 3rd
+    210, 211, 212,                   # Won, Lost, Won%
     54, 56, 57, 58, 24,              # Cmp, Cmp%, TotDist, PrgDist, PrgP
     160, 161, 162,                   # +/-, +/-90, On-Off
     165, 166                         # xG+/-, xG+/-90
     ]
 params_GK_IDX = [
-    11, 12,                          # Gls, Ast
-    186, 187,                        # GA, GA90
-    188, 189, 190,                   # SoTA, Saves, Save%
-    194, 195,                        # CS, CS%
-    191, 192, 193,                   # W, D, L
+    223, 224,                        # GA, GA90
+    225, 226, 227,                   # SoTA, Saves, Save%
+    231, 232,                        # CS, CS%
+    228, 229, 230,                   # W, D, L
     206, 207,                        # PSxG, PSxG/SoT
     208, 209,                        # PSxG+/-, PSxG+/-90
-    196, 197, 198, 199,              # PKatt, PKA, PKsv, PKm
+    233, 234, 235, 236,              # PKatt, PKA, PKsv, PKm
     219, 220, 221                    # #OPA, #OPA/90, AvgDist
     ]
 
@@ -157,13 +156,13 @@ def main():
         pos=player_data.iloc[0]['Pos']
         st.write(S_Player,"\'s main stats")
         if pos in ['FW', 'FW,MF', 'FW,DF']:
-            st.write(player_data.iloc[:,params_FW_IDX])
+            st.write(player_data.loc[:,params_FW])
         elif pos in ['MF', 'MF,FW', 'MF,DF']:
-            st.write(player_data.iloc[:,params_MF_IDX])
+            st.write(player_data.loc[:,params_MF])
         elif pos in ['DF', 'DF,MF', 'DF,FW']:
-            st.write(player_data.iloc[:,params_DF_IDX])
+            st.write(player_data.loc[:,params_DF])
         else:
-            st.write(player_data.iloc[:,params_GK_IDX])
+            st.write(player_data.loc[:,params_GK])
         
         
         
@@ -171,22 +170,22 @@ def main():
             num_params = len(params_FW)
             rader=Radar(params=params_FW,min_range=[0]*num_params,max_range=[40]*num_params)
             fig,ax=rader.setup_axis()
-            values_data=player_data.iloc[:,params_FW_IDX]
+            values_data=player_data.loc[:,params_FW]
         elif pos in ['MF', 'MF,FW', 'MF,DF']:
             num_params = len(params_MF)
             rader=Radar(params=params_MF,min_range=[0]*num_params,max_range=[40]*num_params)
             fig,ax=rader.setup_axis()
-            values_data=player_data.iloc[:,params_MF_IDX]
+            values_data=player_data.loc[:,params_MF]
         elif pos in ['DF', 'DF,MF', 'DF,FW']:
             num_params = len(params_DF)
             rader=Radar(params=params_DF,min_range=[0]*num_params,max_range=[40]*num_params)
             fig,ax=rader.setup_axis()
-            values_data=player_data.iloc[:,params_DF_IDX]
+            values_data=player_data.loc[:,params_DF]
         else:
             num_params = len(params_GK)
             rader=Radar(params=params_GK,min_range=[0]*num_params,max_range=[40]*num_params)
             fig,ax=rader.setup_axis()
-            values_data=player_data.iloc[:,params_GK_IDX]
+            values_data=player_data.loc[:,params_GK]
         values_data=values_data.iloc[0]
         values_data = pd.to_numeric(values_data, errors='coerce').fillna(0).tolist()
         rings_inner = rader.draw_circles(ax=ax, facecolor="#FFFFFF63", edgecolor="#000000")  # draw circles
