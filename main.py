@@ -44,7 +44,7 @@ params_MF = [
     'xAG', 'xA', 'KP',
     'Cmp', 'Att', 'Cmp%',
     'TotDist', 'PrgDist', 'PrgP',
-    'PPA', '01-03',
+    'PPA', 
 
     # 볼 운반
     'Carries', 'PrgC', '1/3', 'CPA',
