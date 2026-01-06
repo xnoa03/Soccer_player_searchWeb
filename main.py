@@ -2,14 +2,23 @@ import streamlit as st
 import pandas as pd
 from mplsoccer import Radar, FontManager
 import matplotlib.pyplot as plt
+URL1 = ('https://raw.githubusercontent.com/googlefonts/SourceSerifProGFVersion/main/fonts/'
+        'SourceSerifPro-Regular.ttf')
+serif_regular = FontManager(URL1)
+URL2 = ('https://raw.githubusercontent.com/googlefonts/SourceSerifProGFVersion/main/fonts/'
+        'SourceSerifPro-ExtraLight.ttf')
+serif_extra_light = FontManager(URL2)
+URL3 = ('https://raw.githubusercontent.com/google/fonts/main/ofl/rubikmonoone/'
+        'RubikMonoOne-Regular.ttf')
+rubik_regular = FontManager(URL3)
+URL4 = 'https://raw.githubusercontent.com/googlefonts/roboto/main/src/hinted/Roboto-Thin.ttf'
+robotto_thin = FontManager(URL4)
+URL5 = ('https://raw.githubusercontent.com/google/fonts/main/apache/robotoslab/'
+        'RobotoSlab%5Bwght%5D.ttf')
+robotto_bold = FontManager(URL5)
 
-def main():
-    data=pd.read_csv("players_data-2024_2025.csv")
-    data_clear=data.drop_duplicates()
-    data_clear = data_clear.iloc[:, 1:]
-    Leagues=sorted(data_clear['Comp'].unique())
-    #포지션별 파라미터
-    params_FW = [ 
+#포지션별 파라미터
+params_FW = [ 
     # 득점 기본
     'Gls', 'Ast', 'G+A', 'G-PK', 'PK', 'PKatt',
 
@@ -27,7 +36,7 @@ def main():
 
     # 찬스 창출
     'KP', 'SCA', 'SCA90', 'GCA', 'GCA90']#29
-    params_MF = [
+params_MF = [
     # 득점 관여 (공통)
     'Gls', 'Ast',
 
@@ -47,7 +56,7 @@ def main():
     # 수비 기여
     'Tkl', 'TklW', 'Int', 'Tkl+Int',
     'Def 3rd', 'Mid 3rd']#30
-    params_DF = [
+params_DF = [
     # 득점 관여 (공통)
     'Gls', 'Ast',
 
@@ -65,7 +74,7 @@ def main():
     # 팀 기여도
     '+/-', '+/-90', 'On-Off',
     'xG+/-', 'xG+/-90']#26
-    params_GK = [
+params_GK = [
 
     # 기본 수비
     'GA', 'GA90',
@@ -86,7 +95,7 @@ def main():
     '#OPA', '#OPA/90', 'AvgDist']#21
 
     #포지션별 파라미터 인덱스
-    params_FW_IDX = [
+params_FW_IDX = [
     11, 12, 13, 14, 15, 16,          # Gls, Ast, G+A, G-PK, PK, PKatt
     19, 20, 21, 22, 27,              # xG, npxG, xAG, npxG+xAG, xG+xAG
     44, 45,                          # G-xG, np:G-xG
@@ -96,7 +105,7 @@ def main():
     23, 24, 25,                      # PrgC, PrgP, PrgR
     66, 90, 91, 98, 99               # KP, SCA, SCA90, GCA, GCA90
     ]
-    params_MF_IDX = [
+params_MF_IDX = [
     11, 12,                          # Gls, Ast
     21, 64, 66,                      # xAG, xA, KP
     54, 55, 56,                      # Cmp, Att, Cmp%
@@ -108,7 +117,7 @@ def main():
     103, 104, 110, 111,              # Tkl, TklW, Int, Tkl+Int
     105, 106                         # Def 3rd, Mid 3rd
     ]
-    params_DF_IDX = [
+params_DF_IDX = [
     11, 12,                          # Gls, Ast
     103, 104, 108,                   # Tkl, TklW, Tkl%
     110, 111,                        # Int, Tkl+Int
@@ -119,7 +128,7 @@ def main():
     160, 161, 162,                   # +/-, +/-90, On-Off
     165, 166                         # xG+/-, xG+/-90
     ]
-    params_GK_IDX = [
+params_GK_IDX = [
     11, 12,                          # Gls, Ast
     186, 187,                        # GA, GA90
     188, 189, 190,                   # SoTA, Saves, Save%
@@ -131,10 +140,11 @@ def main():
     219, 220, 221                    # #OPA, #OPA/90, AvgDist
     ]
 
-
-    
-
-
+def main():
+    data=pd.read_csv("players_data-2024_2025.csv")
+    data_clear=data.drop_duplicates()
+    data_clear = data_clear.iloc[:, 1:]
+    Leagues=sorted(data_clear['Comp'].unique())
     st.title('유럽 5대리그 스카우팅 차트 웹')
     S_League = st.selectbox("리그 선택", Leagues)
     if(S_League!=None):
@@ -145,18 +155,29 @@ def main():
         player_data=data_clear[data_clear['Player']==S_Player]
         st.write(player_data)
         pos=player_data.iloc[0]['Pos']
+        st.write(S_Player,"\'s main stats")
+        if pos in ['FW', 'FW,MF', 'FW,DF']:
+            st.write(player_data.iloc[:,params_FW_IDX])
+        elif pos in ['MF', 'MF,FW', 'MF,DF']:
+            st.write(player_data.iloc[:,params_MF_IDX])
+        elif pos in ['DF', 'DF,MF', 'DF,FW']:
+            st.write(player_data.iloc[:,params_DF_IDX])
+        else:
+            st.write(player_data.iloc[:,params_GK_IDX])
         
-        if(pos=='FW'):
+        
+        
+        if pos in ['FW', 'FW,MF', 'FW,DF']:
             num_params = len(params_FW)
             rader=Radar(params=params_FW,min_range=[0]*num_params,max_range=[40]*num_params)
             fig,ax=rader.setup_axis()
             values_data=player_data.iloc[:,params_FW_IDX]
-        elif(pos=='MF'):
+        elif pos in ['MF', 'MF,FW', 'MF,DF']:
             num_params = len(params_MF)
             rader=Radar(params=params_MF,min_range=[0]*num_params,max_range=[40]*num_params)
             fig,ax=rader.setup_axis()
             values_data=player_data.iloc[:,params_MF_IDX]
-        elif(pos=='DF'):
+        elif pos in ['DF', 'DF,MF', 'DF,FW']:
             num_params = len(params_DF)
             rader=Radar(params=params_DF,min_range=[0]*num_params,max_range=[40]*num_params)
             fig,ax=rader.setup_axis()
@@ -168,7 +189,14 @@ def main():
             values_data=player_data.iloc[:,params_GK_IDX]
         values_data=values_data.iloc[0]
         values_data = pd.to_numeric(values_data, errors='coerce').fillna(0).tolist()
-        rader.draw_radar_solid(values_data,ax=ax,kwargs={'facecolor': 'blue', 'alpha': 0.6})
+        rings_inner = rader.draw_circles(ax=ax, facecolor="#FFFFFF63", edgecolor="#000000")  # draw circles
+        radar_output = rader.draw_radar(values_data, ax=ax,
+                                kwargs_radar={'facecolor': "#dbc4ff"})  # draw the radar
+        radar_poly, rings_outer, vertices = radar_output
+        range_labels = rader.draw_range_labels(ax=ax, fontsize=10,
+                                       fontproperties=robotto_thin.prop)  # draw the range labels
+        param_labels = rader.draw_param_labels(ax=ax, fontsize=15,
+                                       fontproperties=robotto_bold.prop)  # draw the param labels
         st.pyplot(fig)
         
         
