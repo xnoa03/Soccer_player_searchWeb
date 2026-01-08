@@ -94,50 +94,51 @@ params_GK = [
     # 스위퍼 / 발밑
     '#OPA', '#OPA/90', 'AvgDist']#21
 
-    #포지션별 파라미터 인덱스
-params_FW_IDX = [
-    11, 12, 13, 14, 15, 16,          # Gls, Ast, G+A, G-PK, PK, PKatt
-    19, 20, 21, 22, 27,              # xG, npxG, xAG, npxG+xAG, xG+xAG
-    44, 45,                          # G-xG, np:G-xG
-    35, 36, 37, 38, 39,              # Sh, SoT, SoT%, Sh/90, SoT/90
-    40, 41, 42,                      # G/Sh, G/SoT, Dist
-    141, 146,                        # Touches, Att Pen
-    23, 24, 25,                      # PrgC, PrgP, PrgR
-    66, 110, 111, 98, 99              # KP, SCA, SCA90, GCA, GCA90
-    ]
-params_MF_IDX = [
-    11, 12,                          # Gls, Ast
-    21, 64, 66,                      # xAG, xA, KP
-    54, 55, 56,                      # Cmp, Att, Cmp%
-    57, 58, 24,                      # TotDist, PrgDist, PrgP
-    68, 67,                          # PPA, 01-03
-    149, 23, 150, 151,               # Carries, PrgC, 1/3, CPA
-    152, 153, 155,                   # Succ, Succ%, Tkld%
-    110, 111, 98, 99,                # SCA, SCA90, GCA, GCA90
-    119, 120, 130, 131,              # Tkl, TklW, Int, Tkl+Int
-    121, 122                         # Def 3rd, Mid 3rd
-    ]
-params_DF_IDX = [
-    11, 12,                          # Gls, Ast
-    119, 120, 125,                   # Tkl, TklW, Tkl%
-    130, 131,                        # Int, Tkl+Int
-    127, 132, 133,                   # Blocks, Clr, Err
-    121, 122, 123,                   # Def 3rd, Mid 3rd, Att 3rd
-    210, 211, 212,                   # Won, Lost, Won%
-    54, 56, 57, 58, 24,              # Cmp, Cmp%, TotDist, PrgDist, PrgP
-    160, 161, 162,                   # +/-, +/-90, On-Off
-    165, 166                         # xG+/-, xG+/-90
-    ]
-params_GK_IDX = [
-    223, 224,                        # GA, GA90
-    225, 226, 227,                   # SoTA, Saves, Save%
-    231, 232,                        # CS, CS%
-    228, 229, 230,                   # W, D, L
-    206, 207,                        # PSxG, PSxG/SoT
-    208, 209,                        # PSxG+/-, PSxG+/-90
-    233, 234, 235, 236,              # PKatt, PKA, PKsv, PKm
-    219, 220, 221                    # #OPA, #OPA/90, AvgDist
-    ]
+# max param of positions
+max_range_FW = [
+    35, 20, 50, 25, 10, 10,       # Gls, Ast, G+A, G-PK, PK, PKatt
+    30, 25, 15, 35, 5.5,          # xG, npxG, xAG, npxG+xAG, xG+xAG
+    10, 10,                       # G-xG, np:G-xG
+    160, 80, 100, 10, 5,          # Sh, SoT, SoT%, Sh/90, SoT/90 (90분당은 10정도로 제한 추천)
+    0.5, 0.5, 45,                 # G/Sh, G/SoT, Dist (골결정력은 1.0이 최대지만 0.5 정도가 적당)
+    3900, 360,                    # Touches, Att Pen
+    220, 370, 500,                # PrgC, PrgP, PrgR
+    100, 210, 15, 30, 15          # KP, SCA, SCA90, GCA, GCA90
+]
+
+max_range_MF = [
+    35, 20,                       # Gls, Ast
+    15, 15, 100,                  # xAG, xA, KP
+    3300, 3700, 100,              # Cmp, Att, Cmp%
+    60000, 26000, 370,            # TotDist, PrgDist, PrgP
+    120, 440,                     # PPA, 1/3 (패스 관련)
+    2400, 220, 130,               # Carries, PrgC, CPA
+    170, 100, 100,                # Succ, Succ%, Tkld%
+    210, 15, 30, 15,              # SCA, SCA90, GCA, GCA90
+    140, 80, 80, 190,             # Tkl, TklW, Int, Tkl+Int
+    90, 60                        # Def 3rd, Mid 3rd
+]
+
+max_range_DF = [
+    15, 15,                       # Gls, Ast (수비수는 낮게 설정 추천)
+    140, 80, 100, 80, 190,        # Tkl, TklW, Tkl%, Int, Tkl+Int
+    80, 250, 10,                  # Blocks, Clr, Err
+    90, 60, 30,                   # Def 3rd, Mid 3rd, Att 3rd
+    170, 70, 100,                 # Won, Lost, Won%
+    3300, 100, 60000, 26000, 370, # Cmp, Cmp%, TotDist, PrgDist, PrgP
+    65, 3, 3,                     # +/-, +/-90, On-Off (90분당 데이터는 3~5 내외 추천)
+    55, 3                         # xG+/-, xG+/-90
+]
+
+max_range_GK = [
+    80, 5.0,                      # GA, GA90
+    210, 150, 100,                # SoTA, Saves, Save%
+    16, 100,                      # CS, CS%
+    25, 20, 25,                   # W, D, L
+    75, 0.6, 15, 1.5,             # PSxG, PSxG/SoT, PSxG+/-, /90
+    10, 15, 5, 5,                 # PKatt, PKA, PKsv, PKm
+    90, 10, 30                    # #OPA, #OPA/90, AvgDist
+]
 
 def main():
     data=pd.read_csv("players_data-2024_2025.csv")
@@ -168,34 +169,35 @@ def main():
         
         if pos in ['FW', 'FW,MF', 'FW,DF']:
             num_params = len(params_FW)
-            rader=Radar(params=params_FW,min_range=[0]*num_params,max_range=[40]*num_params)
+            rader=Radar(params=params_FW,min_range=[0]*num_params,max_range=max_range_FW)
             fig,ax=rader.setup_axis()
             values_data=player_data.loc[:,params_FW]
         elif pos in ['MF', 'MF,FW', 'MF,DF']:
             num_params = len(params_MF)
-            rader=Radar(params=params_MF,min_range=[0]*num_params,max_range=[40]*num_params)
+            rader=Radar(params=params_MF,min_range=[0]*num_params,max_range=max_range_MF)
             fig,ax=rader.setup_axis()
             values_data=player_data.loc[:,params_MF]
         elif pos in ['DF', 'DF,MF', 'DF,FW']:
             num_params = len(params_DF)
-            rader=Radar(params=params_DF,min_range=[0]*num_params,max_range=[40]*num_params)
+            rader=Radar(params=params_DF,min_range=[0]*num_params,max_range=max_range_DF)
             fig,ax=rader.setup_axis()
             values_data=player_data.loc[:,params_DF]
         else:
             num_params = len(params_GK)
-            rader=Radar(params=params_GK,min_range=[0]*num_params,max_range=[40]*num_params)
+            rader=Radar(params=params_GK,min_range=[0]*num_params,max_range=max_range_GK)
             fig,ax=rader.setup_axis()
             values_data=player_data.loc[:,params_GK]
         values_data=values_data.iloc[0]
         values_data = pd.to_numeric(values_data, errors='coerce').fillna(0).tolist()
-        rings_inner = rader.draw_circles(ax=ax, facecolor="#FFFFFF63", edgecolor="#000000")  # draw circles
+        rings_inner = rader.draw_circles(ax=ax, facecolor="#FF8E8E8F", edgecolor="#000000")  # draw circles
         radar_output = rader.draw_radar(values_data, ax=ax,
-                                kwargs_radar={'facecolor': "#dbc4ff"})  # draw the radar
+                                kwargs_radar={'facecolor': "#c5a5f8b9"})
         radar_poly, rings_outer, vertices = radar_output
         range_labels = rader.draw_range_labels(ax=ax, fontsize=10,
-                                       fontproperties=robotto_thin.prop)  # draw the range labels
+                                       fontproperties=robotto_thin.prop)
         param_labels = rader.draw_param_labels(ax=ax, fontsize=15,
-                                       fontproperties=robotto_bold.prop)  # draw the param labels
+                                       fontproperties=robotto_bold.prop)
+        lines = rader.spoke(ax=ax, color='#a6a4a1', linestyle='--', zorder=2)
         st.pyplot(fig)
         
         
