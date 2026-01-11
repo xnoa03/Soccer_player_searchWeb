@@ -140,65 +140,179 @@ max_range_GK = [
     90, 10, 30                    # #OPA, #OPA/90, AvgDist
 ]
 
+def parse_positions(pos_str):
+    return set(p.strip() for p in pos_str.split(','))
+
+
 def main():
     data=pd.read_csv("players_data-2024_2025.csv")
     data_clear=data.drop_duplicates()
     data_clear = data_clear.iloc[:, 1:]
     Leagues=sorted(data_clear['Comp'].unique())
     st.title('유럽 5대리그 스카우팅 차트 웹')
-    S_League = st.selectbox("리그 선택", Leagues)
-    if(S_League!=None):
-        League_data=data_clear[data_clear['Comp']==S_League]
-        Players=League_data['Player']
-        S_Player = st.selectbox("선수 선택", Players)
-        st.write("Selected Player: ",S_Player)
-        player_data=data_clear[data_clear['Player']==S_Player]
-        st.write(player_data)
-        pos=player_data.iloc[0]['Pos']
-        st.write(S_Player,"\'s main stats")
-        if pos in ['FW', 'FW,MF', 'FW,DF']:
-            st.write(player_data.loc[:,params_FW])
-        elif pos in ['MF', 'MF,FW', 'MF,DF']:
-            st.write(player_data.loc[:,params_MF])
-        elif pos in ['DF', 'DF,MF', 'DF,FW']:
-            st.write(player_data.loc[:,params_DF])
-        else:
-            st.write(player_data.loc[:,params_GK])
+    on =st.toggle("비교 모드")
+    if on:
+        st.write("비교 모드 on")
+    else:
+        st.write("비교 모드 off")
+    S_League_1 = st.selectbox("리그 선택", Leagues,key="league_1")
+    if on:#플레이어 비교 모드
+        if(S_League_1!=None):
+            League_data_1=data_clear[data_clear['Comp']==S_League_1]
+            Players_1=League_data_1['Player']
+            S_Player_1 = st.selectbox("선수 선택1", Players_1)
+            st.write("Selected Player: ",S_Player_1)
+            player_data_1=data_clear[data_clear['Player']==S_Player_1]
+            st.write(player_data_1)
+            pos=player_data_1.iloc[0]['Pos']
+            st.write(S_Player_1,"\'s main stats")
+            if pos in ['FW', 'FW,MF', 'FW,DF']:
+                st.write(player_data_1.loc[:,params_FW])
+            elif pos in ['MF', 'MF,FW', 'MF,DF']:
+                st.write(player_data_1.loc[:,params_MF])
+            elif pos in ['DF', 'DF,MF', 'DF,FW']:
+                st.write(player_data_1.loc[:,params_DF])
+            else:
+                st.write(player_data_1.loc[:,params_GK])
         
         
         
-        if pos in ['FW', 'FW,MF', 'FW,DF']:
-            num_params = len(params_FW)
-            rader=Radar(params=params_FW,min_range=[0]*num_params,max_range=max_range_FW)
-            fig,ax=rader.setup_axis()
-            values_data=player_data.loc[:,params_FW]
-        elif pos in ['MF', 'MF,FW', 'MF,DF']:
-            num_params = len(params_MF)
-            rader=Radar(params=params_MF,min_range=[0]*num_params,max_range=max_range_MF)
-            fig,ax=rader.setup_axis()
-            values_data=player_data.loc[:,params_MF]
-        elif pos in ['DF', 'DF,MF', 'DF,FW']:
-            num_params = len(params_DF)
-            rader=Radar(params=params_DF,min_range=[0]*num_params,max_range=max_range_DF)
-            fig,ax=rader.setup_axis()
-            values_data=player_data.loc[:,params_DF]
-        else:
-            num_params = len(params_GK)
-            rader=Radar(params=params_GK,min_range=[0]*num_params,max_range=max_range_GK)
-            fig,ax=rader.setup_axis()
-            values_data=player_data.loc[:,params_GK]
-        values_data=values_data.iloc[0]
-        values_data = pd.to_numeric(values_data, errors='coerce').fillna(0).tolist()
-        rings_inner = rader.draw_circles(ax=ax, facecolor="#FF8E8E8F", edgecolor="#000000")  # draw circles
-        radar_output = rader.draw_radar(values_data, ax=ax,
-                                kwargs_radar={'facecolor': "#c5a5f8b9"})
-        radar_poly, rings_outer, vertices = radar_output
-        range_labels = rader.draw_range_labels(ax=ax, fontsize=10,
+            if pos in ['FW', 'FW,MF', 'FW,DF']:
+                num_params = len(params_FW)
+                rader=Radar(params=params_FW,min_range=[0]*num_params,max_range=max_range_FW)
+                
+                values_data_1=player_data_1.loc[:,params_FW]
+            elif pos in ['MF', 'MF,FW', 'MF,DF']:
+                num_params = len(params_MF)
+                rader=Radar(params=params_MF,min_range=[0]*num_params,max_range=max_range_MF)
+                
+                values_data_1=player_data_1.loc[:,params_MF]
+            elif pos in ['DF', 'DF,MF', 'DF,FW']:
+                num_params = len(params_DF)
+                rader=Radar(params=params_DF,min_range=[0]*num_params,max_range=max_range_DF)
+                
+                values_data_1=player_data_1.loc[:,params_DF]
+            else:
+                num_params = len(params_GK)
+                rader=Radar(params=params_GK,min_range=[0]*num_params,max_range=max_range_GK)
+                
+                values_data_1=player_data_1.loc[:,params_GK]
+            values_data_1=values_data_1.iloc[0]
+            values_data_1 = pd.to_numeric(values_data_1, errors='coerce').fillna(0).tolist()
+
+            S_League_2 = st.selectbox("리그 선택", Leagues,key="league_2")
+            League_data_2=data_clear[data_clear['Comp']==S_League_2]
+            Players_2=League_data_2['Player']
+            S_Player_2 = st.selectbox("선수 선택2", Players_2)
+            st.write("Selected Player: ",S_Player_2)
+            player_data_2=data_clear[data_clear['Player']==S_Player_2]
+            st.write(player_data_2)
+            pos=player_data_2.iloc[0]['Pos']
+            st.write(S_Player_2,"\'s main stats")
+            if pos in ['FW', 'FW,MF', 'FW,DF']:
+                st.write(player_data_2.loc[:,params_FW])
+            elif pos in ['MF', 'MF,FW', 'MF,DF']:
+                st.write(player_data_2.loc[:,params_MF])
+            elif pos in ['DF', 'DF,MF', 'DF,FW']:
+                st.write(player_data_2.loc[:,params_DF])
+            else:
+                st.write(player_data_2.loc[:,params_GK])
+        
+        
+        
+            if pos in ['FW', 'FW,MF', 'FW,DF']:
+                num_params = len(params_FW)
+                rader=Radar(params=params_FW,min_range=[0]*num_params,max_range=max_range_FW)
+                fig,ax=rader.setup_axis()
+                values_data_2=player_data_2.loc[:,params_FW]
+            elif pos in ['MF', 'MF,FW', 'MF,DF']:
+                num_params = len(params_MF)
+                rader=Radar(params=params_MF,min_range=[0]*num_params,max_range=max_range_MF)
+                fig,ax=rader.setup_axis()
+                values_data_2=player_data_2.loc[:,params_MF]
+            elif pos in ['DF', 'DF,MF', 'DF,FW']:
+                num_params = len(params_DF)
+                rader=Radar(params=params_DF,min_range=[0]*num_params,max_range=max_range_DF)
+                fig,ax=rader.setup_axis()
+                values_data_2=player_data_2.loc[:,params_DF]
+            else:
+                num_params = len(params_GK)
+                rader=Radar(params=params_GK,min_range=[0]*num_params,max_range=max_range_GK)
+                fig,ax=rader.setup_axis()
+                values_data_2=player_data_2.loc[:,params_GK]
+            values_data_2=values_data_2.iloc[0]
+            values_data_2 = pd.to_numeric(values_data_2, errors='coerce').fillna(0).tolist()
+            pos1_set=parse_positions(player_data_1.iloc[0]['Pos'])
+            pos2_set=parse_positions(player_data_2.iloc[0]['Pos'])
+            pos_set=pos1_set&pos2_set
+            if not pos_set:
+                st.warning("동포지션의 선수만 비교가 가능합니다.")
+                return
+            else:
+                rings_inner = rader.draw_circles(ax=ax, facecolor='#ffb2b2', edgecolor='#fc5f5f')
+                radar_output = rader.draw_radar_compare(values_data_1, values_data_2, ax=ax,
+                                        kwargs_radar={'facecolor': '#00f2c1', 'alpha': 0.6},
+                                        kwargs_compare={'facecolor': '#d80499', 'alpha': 0.6})
+                radar_poly, radar_poly2, vertices1, vertices2 = radar_output
+                range_labels = rader.draw_range_labels(ax=ax, fontsize=15,
                                        fontproperties=robotto_thin.prop)
-        param_labels = rader.draw_param_labels(ax=ax, fontsize=15,
+                param_labels = rader.draw_param_labels(ax=ax, fontsize=15,
+                                       fontproperties=robotto_thin.prop)
+            st.pyplot(fig)
+    else:#플레이어 비교 모드 off
+        if(S_League_1!=None):
+            League_data=data_clear[data_clear['Comp']==S_League_1]
+            Players=League_data['Player']
+            S_Player = st.selectbox("선수 선택", Players)
+            st.write("Selected Player: ",S_Player)
+            player_data=data_clear[data_clear['Player']==S_Player]
+            st.write(player_data)
+            pos=player_data.iloc[0]['Pos']
+            st.write(S_Player,"\'s main stats")
+            if pos in ['FW', 'FW,MF', 'FW,DF']:
+                st.write(player_data.loc[:,params_FW])
+            elif pos in ['MF', 'MF,FW', 'MF,DF']:
+                st.write(player_data.loc[:,params_MF])
+            elif pos in ['DF', 'DF,MF', 'DF,FW']:
+                st.write(player_data.loc[:,params_DF])
+            else:
+                st.write(player_data.loc[:,params_GK])
+        
+        
+        
+            if pos in ['FW', 'FW,MF', 'FW,DF']:
+                num_params = len(params_FW)
+                rader=Radar(params=params_FW,min_range=[0]*num_params,max_range=max_range_FW)
+                fig,ax=rader.setup_axis()
+                values_data=player_data.loc[:,params_FW]
+            elif pos in ['MF', 'MF,FW', 'MF,DF']:
+                num_params = len(params_MF)
+                rader=Radar(params=params_MF,min_range=[0]*num_params,max_range=max_range_MF)
+                fig,ax=rader.setup_axis()
+                values_data=player_data.loc[:,params_MF]
+            elif pos in ['DF', 'DF,MF', 'DF,FW']:
+                num_params = len(params_DF)
+                rader=Radar(params=params_DF,min_range=[0]*num_params,max_range=max_range_DF)
+                fig,ax=rader.setup_axis()
+                values_data=player_data.loc[:,params_DF]
+            else:
+                num_params = len(params_GK)
+                rader=Radar(params=params_GK,min_range=[0]*num_params,max_range=max_range_GK)
+                fig,ax=rader.setup_axis()
+                values_data=player_data.loc[:,params_GK]
+            values_data=values_data.iloc[0]
+            values_data = pd.to_numeric(values_data, errors='coerce').fillna(0).tolist()
+            rings_inner = rader.draw_circles(ax=ax, facecolor="#FF8E8E8F", edgecolor="#000000")  # draw circles
+            radar_output = rader.draw_radar(values_data, ax=ax,
+                                kwargs_radar={'facecolor': "#c5a5f8b9"})
+            radar_poly, rings_outer, vertices = radar_output
+            range_labels = rader.draw_range_labels(ax=ax, fontsize=10,
+                                       fontproperties=robotto_thin.prop)
+            param_labels = rader.draw_param_labels(ax=ax, fontsize=15,
                                        fontproperties=robotto_bold.prop)
-        lines = rader.spoke(ax=ax, color='#a6a4a1', linestyle='--', zorder=2)
-        st.pyplot(fig)
+            lines = rader.spoke(ax=ax, color='#a6a4a1', linestyle='--', zorder=2)
+            st.pyplot(fig)
+
         
         
 
