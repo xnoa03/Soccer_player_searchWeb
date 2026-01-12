@@ -47,7 +47,7 @@ params_MF = [
     'PPA', 
 
     # 볼 운반
-    'Carries', 'PrgC', '1/3', 'CPA',
+    'Carries', 'PrgC', 'CPA',
     'Succ', 'Succ%', 'Tkld%',
 
     # 공격 기여
@@ -111,7 +111,7 @@ max_range_MF = [
     15, 15, 100,                  # xAG, xA, KP
     3300, 3700, 100,              # Cmp, Att, Cmp%
     60000, 26000, 370,            # TotDist, PrgDist, PrgP
-    120, 440,                     # PPA, 1/3 (패스 관련)
+    120,                          # PPA
     2400, 220, 130,               # Carries, PrgC, CPA
     170, 100, 100,                # Succ, Succ%, Tkld%
     210, 15, 30, 15,              # SCA, SCA90, GCA, GCA90
@@ -177,28 +177,7 @@ def main():
         
         
         
-            if pos in ['FW', 'FW,MF', 'FW,DF']:
-                num_params = len(params_FW)
-                rader=Radar(params=params_FW,min_range=[0]*num_params,max_range=max_range_FW)
-                
-                values_data_1=player_data_1.loc[:,params_FW]
-            elif pos in ['MF', 'MF,FW', 'MF,DF']:
-                num_params = len(params_MF)
-                rader=Radar(params=params_MF,min_range=[0]*num_params,max_range=max_range_MF)
-                
-                values_data_1=player_data_1.loc[:,params_MF]
-            elif pos in ['DF', 'DF,MF', 'DF,FW']:
-                num_params = len(params_DF)
-                rader=Radar(params=params_DF,min_range=[0]*num_params,max_range=max_range_DF)
-                
-                values_data_1=player_data_1.loc[:,params_DF]
-            else:
-                num_params = len(params_GK)
-                rader=Radar(params=params_GK,min_range=[0]*num_params,max_range=max_range_GK)
-                
-                values_data_1=player_data_1.loc[:,params_GK]
-            values_data_1=values_data_1.iloc[0]
-            values_data_1 = pd.to_numeric(values_data_1, errors='coerce').fillna(0).tolist()
+            
 
             S_League_2 = st.selectbox("리그 선택", Leagues,key="league_2")
             League_data_2=data_clear[data_clear['Comp']==S_League_2]
@@ -220,44 +199,62 @@ def main():
         
         
         
-            if pos in ['FW', 'FW,MF', 'FW,DF']:
-                num_params = len(params_FW)
-                rader=Radar(params=params_FW,min_range=[0]*num_params,max_range=max_range_FW)
-                fig,ax=rader.setup_axis()
-                values_data_2=player_data_2.loc[:,params_FW]
-            elif pos in ['MF', 'MF,FW', 'MF,DF']:
-                num_params = len(params_MF)
-                rader=Radar(params=params_MF,min_range=[0]*num_params,max_range=max_range_MF)
-                fig,ax=rader.setup_axis()
-                values_data_2=player_data_2.loc[:,params_MF]
-            elif pos in ['DF', 'DF,MF', 'DF,FW']:
-                num_params = len(params_DF)
-                rader=Radar(params=params_DF,min_range=[0]*num_params,max_range=max_range_DF)
-                fig,ax=rader.setup_axis()
-                values_data_2=player_data_2.loc[:,params_DF]
-            else:
-                num_params = len(params_GK)
-                rader=Radar(params=params_GK,min_range=[0]*num_params,max_range=max_range_GK)
-                fig,ax=rader.setup_axis()
-                values_data_2=player_data_2.loc[:,params_GK]
-            values_data_2=values_data_2.iloc[0]
-            values_data_2 = pd.to_numeric(values_data_2, errors='coerce').fillna(0).tolist()
+            
             pos1_set=parse_positions(player_data_1.iloc[0]['Pos'])
             pos2_set=parse_positions(player_data_2.iloc[0]['Pos'])
             pos_set=pos1_set&pos2_set
+
             if not pos_set:
                 st.warning("동포지션의 선수만 비교가 가능합니다.")
                 return
+
+            POSITION_PRIORITY = ['FW', 'MF', 'DF', 'GK']
+            base_pos=None
+
+            # 기준 포지션 선택
+            for p in POSITION_PRIORITY:
+                if p in pos_set:
+                    base_pos = p
+                    break
+
+            
+            
+            if base_pos == 'FW':
+                params = params_FW
+                max_range = max_range_FW
+            elif base_pos == 'MF':
+                params = params_MF
+                max_range = max_range_MF
+            elif base_pos == 'DF':
+                params = params_DF
+                max_range = max_range_DF
             else:
-                rings_inner = rader.draw_circles(ax=ax, facecolor='#ffb2b2', edgecolor='#fc5f5f')
-                radar_output = rader.draw_radar_compare(values_data_1, values_data_2, ax=ax,
+                params = params_GK
+                max_range = max_range_GK
+
+            num_params = len(params)
+            rader = Radar(params=params, min_range=[0]*num_params, max_range=max_range)
+            fig, ax = rader.setup_axis()
+
+            v1 = player_data_1.loc[:, params].iloc[0]
+            v2 = player_data_2.loc[:, params].iloc[0]
+
+            values_data_1 = pd.to_numeric(v1, errors='coerce').fillna(0).tolist()
+            values_data_2 = pd.to_numeric(v2, errors='coerce').fillna(0).tolist()
+
+
+
+            
+            rings_inner = rader.draw_circles(ax=ax, facecolor='#ffb2b2', edgecolor='#fc5f5f')
+            radar_output = rader.draw_radar_compare(values_data_1, values_data_2, ax=ax,
                                         kwargs_radar={'facecolor': '#00f2c1', 'alpha': 0.6},
                                         kwargs_compare={'facecolor': '#d80499', 'alpha': 0.6})
-                radar_poly, radar_poly2, vertices1, vertices2 = radar_output
-                range_labels = rader.draw_range_labels(ax=ax, fontsize=15,
+            radar_poly, radar_poly2, vertices1, vertices2 = radar_output
+            range_labels = rader.draw_range_labels(ax=ax, fontsize=15,
                                        fontproperties=robotto_thin.prop)
-                param_labels = rader.draw_param_labels(ax=ax, fontsize=15,
+            param_labels = rader.draw_param_labels(ax=ax, fontsize=15,
                                        fontproperties=robotto_thin.prop)
+            ax.legend([S_Player_1, S_Player_2], loc='upper center', bbox_to_anchor=(0.5, 1.1))
             st.pyplot(fig)
     else:#플레이어 비교 모드 off
         if(S_League_1!=None):
